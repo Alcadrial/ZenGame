@@ -1,6 +1,9 @@
 import zengame.Action;
 import zengame.GameRegistry;
 import zengame.Game;
+import zengame.keyboard.KeyboardListener;
+import zengame.keyboard.KeyContext;
+import zengame.keyboard.KeyPressType;
 
 println("--------------------------------");
 println("              ZEN               ");
@@ -29,11 +32,13 @@ var game = GameRegistry.registerCommandLineGame("zen");
 println(game);
 
 game.onStart = () => {
-	game.println(game.readString("Insert message: "));
+	game.addKeyListener(context => {
+		if (context.virtualKeyCode == KeyContext.KEY_ESCAPE) game.terminate();
+	});
+	game.println("Press 'ESC' to exit in any moment");
 };
 game.onLoop = partial => {
-	game.println(partial);
-	if (i.next() >= 60) game.terminate();
+	
 };
 game.onTerminate = () => {
 	game.println();
