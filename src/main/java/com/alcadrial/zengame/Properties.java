@@ -15,6 +15,7 @@ public class Properties {
 	
 	public static final Property<String> ASSETS_PATH = register(new StringProperty("assets", "src/main/resources"));
 	public static final Property<String> SCRIPTS_PATH = register(new StringProperty("scripts", "src/main/scripts"));
+	public static final Property<String> GAME = register(new StringProperty("game", null));
 	
 	private static <P extends Property<?>> P register(P property)
 	{

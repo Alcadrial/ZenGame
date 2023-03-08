@@ -29,7 +29,6 @@ public class EnumBracketParser<E extends Enum<E>> implements BracketExpressionPa
 		this.classDefinition = (EnumDefinition) classDefinition;
 		
 		List<EnumConstantMember> fields = this.classDefinition.enumConstants;
-		System.out.println(fields);
 		
 		fieldNames = new ArrayList<>(fields.size());
 		if (fields.size() > 0)

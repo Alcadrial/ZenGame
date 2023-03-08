@@ -1,8 +1,47 @@
 import zengame.Action;
+import zengame.GameRegistry;
+import zengame.Game;
 
 println("--------------------------------");
 println("              ZEN               ");
 println("--------------------------------");
+
+public class IntegerPointer {
+	
+	private var i as int;
+	
+	public this(i as int)
+	{
+		this.i = i;
+	}
+	
+	public next() as int
+	{
+		i += 1;
+		return i;
+	}
+}
+
+var i = new IntegerPointer(0);
+
+var game = GameRegistry.registerCommandLineGame("zen");
+
+println(game);
+
+game.onStart = () => {
+	game.println(game.readString("Insert message: "));
+};
+game.onLoop = partial => {
+	game.println(partial);
+	if (i.next() >= 60) game.terminate();
+};
+game.onTerminate = () => {
+	game.println();
+	game.println("GAME OVER");
+	game.println();
+};
+println(game.isRunning());
+
 
 public class C {
 	public static var i = 0;
