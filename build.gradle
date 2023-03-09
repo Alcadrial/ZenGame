@@ -10,7 +10,7 @@ configurations {
 
 version = "1.0"
 group = "com.alcadrial.zengame"
-archivesBaseName = "ZenGame-${version}"
+archivesBaseName = "ZenGame"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -51,16 +51,17 @@ dependencies {
     implementation("lc.kra.system:system-hook:3.8")
 }
 
-jar {
-    manifest {
-        attributes([
-                "Specification-Title"     : "Zen Game",
-                "Specification-Vendor"    : "Alcadra",
-                "Specification-Version"   : "1",
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : "alcadra",
-                "Implementation-Timestamp": new Date().format("dd/MM/yyyy HH:mm:ss")
-        ])
-    }
-}
+def manifestAttributes = [
+	"Specification-Title"     : name,
+	"Specification-Version"   : version,
+	"Specification-Vendor"    : author,
+	"Implementation-Title"    : name,
+	"Implementation-Version"  : version,
+	"Implementation-Vendor"   : author,
+	"Implementation-Timestamp": new Date().format("dd/MM/yyyy HH:mm:ss"),
+	"Main-Class"              : "com.alcadrial.zengame.ZenGame"
+];
+
+jar.manifest.attributes(manifestAttributes)
+//sourcesJar.manifest.attributes(manifestAttributes)
+//javadocJar.manifest.attributes(manifestAttributes)

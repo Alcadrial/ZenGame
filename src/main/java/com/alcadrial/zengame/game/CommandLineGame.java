@@ -1,11 +1,15 @@
 package com.alcadrial.zengame.game;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Scanner;
 
 import org.openzen.zencode.java.ZenCodeType.Method;
 
 import com.alcadra.threads.TimeThread;
+
+import nonapi.io.github.classgraph.utils.VersionFinder;
+import nonapi.io.github.classgraph.utils.VersionFinder.OperatingSystem;
 
 public class CommandLineGame extends Game {
 	
@@ -99,6 +103,24 @@ public class CommandLineGame extends Game {
 	public boolean isRunning()
 	{
 		return running;
+	}
+	
+	@Method
+	public void clear()
+	{
+		if (running)
+		{
+			if (VersionFinder.OS == OperatingSystem.Windows)
+			{
+				try
+				{
+					new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+				}
+				catch (InterruptedException | IOException e)
+				{}
+			}
+			else System.out.print("\u001bc");
+		}
 	}
 	
 	@Method
