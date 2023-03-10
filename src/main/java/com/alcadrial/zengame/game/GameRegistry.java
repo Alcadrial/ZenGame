@@ -1,6 +1,7 @@
 package com.alcadrial.zengame.game;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.openzen.zencode.java.ZenCodeType.Method;
 
@@ -14,6 +15,11 @@ public class GameRegistry {
 	public static Game getGame(String name)
 	{
 		return GAMES.get(name);
+	}
+	
+	public static List<Game> getGames()
+	{
+		return List.copyOf(GAMES.values());
 	}
 	
 	@Method
