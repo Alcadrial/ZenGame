@@ -2,13 +2,17 @@ package com.alcadrial.zengame.game;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.openzen.zencode.java.ZenCodeType.Method;
 
 import com.alcadra.threads.TimeThread;
 import com.alcadrial.zengame.ZenClass;
+import com.alcadrial.zengame.script.keyboard.ZenKeyboardListener;
 
+import lc.kra.system.keyboard.GlobalKeyboardHook;
+import lc.kra.system.keyboard.event.GlobalKeyListener;
 import nonapi.io.github.classgraph.utils.VersionFinder;
 import nonapi.io.github.classgraph.utils.VersionFinder.OperatingSystem;
 
@@ -21,6 +25,8 @@ public class CommandLineGame extends Game {
 		return new CommandLineGameBuilder(name);
 	}
 	
+	private GlobalKeyboardHook keyboardHook;
+	private Map<ZenKeyboardListener, GlobalKeyListener> listenerMap;
 	private Scanner in;
 	private PrintStream out;
 	private boolean living;
@@ -29,6 +35,7 @@ public class CommandLineGame extends Game {
 	public CommandLineGame(int id, CommandLineGameBuilder builder)
 	{
 		super(id, builder);
+		listenerMap = builder.getListenerMap();
 		in = new Scanner(builder.getInput());
 		out = new PrintStream(builder.getOutput());
 		living = false;
@@ -78,6 +85,8 @@ public class CommandLineGame extends Game {
 	{
 		living = true;
 		running = true;
+		keyboardHook = new GlobalKeyboardHook(true);
+		for (GlobalKeyListener listener : listenerMap.values()) keyboardHook.addKeyListener(listener);
 		super.startSequence();
 	}
 	
@@ -97,8 +106,21 @@ public class CommandLineGame extends Game {
 	protected void terminateSequence()
 	{
 		super.terminateSequence();
+		keyboardHook.shutdownHook();
 		living = false;
 		running = false;
+	}
+	
+	@Method
+	public boolean isKeyHeldDown(int virtualKeyCode)
+	{
+		return keyboardHook.isKeyHeldDown(virtualKeyCode);
+	}
+	
+	@Method
+	public boolean areKeysHeldDown(int... virtualKeyCodes)
+	{
+		return keyboardHook.areKeysHeldDown(virtualKeyCodes);
 	}
 	
 	@Method

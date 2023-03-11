@@ -2,7 +2,6 @@ import zengame.CommandLineGame;
 import zengame.GameRegistry;
 import zengame.keyboard.KeyContext;
 
-
 public class Pacman {
 	
 	public static final var screen = [

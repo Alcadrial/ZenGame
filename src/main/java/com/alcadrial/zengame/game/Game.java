@@ -1,6 +1,5 @@
 package com.alcadrial.zengame.game;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 import org.openzen.zencode.java.ZenCodeType.Caster;
@@ -9,18 +8,12 @@ import org.openzen.zencode.java.ZenCodeType.Method;
 
 import com.alcadra.threads.TimeThread;
 import com.alcadrial.zengame.ZenClass;
-import com.alcadrial.zengame.script.keyboard.ZenKeyboardListener;
-
-import lc.kra.system.keyboard.GlobalKeyboardHook;
-import lc.kra.system.keyboard.event.GlobalKeyListener;
 
 @ZenClass
 public abstract class Game {
 	
 	private int id;
 	private String name;
-	private GlobalKeyboardHook keyboardHook;
-	private Map<ZenKeyboardListener, GlobalKeyListener> listenerMap;
 	private int tps;
 	private Runnable onStartAction;
 	private Consumer<Float> onLoopAction;
@@ -33,7 +26,6 @@ public abstract class Game {
 	{
 		this.id = id;
 		name = builder.getName();
-		listenerMap = builder.getListenerMap();
 		tps = builder.getTps();
 		onStartAction = builder.getOnStartAction();
 		onLoopAction = builder.getOnLoopAction();
@@ -84,8 +76,6 @@ public abstract class Game {
 	
 	protected void startSequence()
 	{
-		keyboardHook = new GlobalKeyboardHook(true);
-		for (GlobalKeyListener listener : listenerMap.values()) keyboardHook.addKeyListener(listener);
 		onStartAction.run();
 	}
 	
@@ -102,19 +92,6 @@ public abstract class Game {
 	protected void terminateSequence()
 	{
 		onTerminateAction.run();
-		keyboardHook.shutdownHook();
-	}
-	
-	@Method
-	public boolean isKeyHeldDown(int virtualKeyCode)
-	{
-		return keyboardHook.isKeyHeldDown(virtualKeyCode);
-	}
-	
-	@Method
-	public boolean areKeysHeldDown(int... virtualKeyCodes)
-	{
-		return keyboardHook.areKeysHeldDown(virtualKeyCodes);
 	}
 	
 	@Getter("id")
