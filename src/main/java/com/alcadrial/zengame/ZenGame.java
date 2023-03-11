@@ -77,6 +77,9 @@ public class ZenGame {
 			engine.run();
 			
 			List<Game> games = GameRegistry.getGames();
+			
+			if (games.size() == 0) return;
+			
 			List<String> names = games.stream().map(Game::getName).toList();
 			
 			String gameName = Properties.GAME.getValue();

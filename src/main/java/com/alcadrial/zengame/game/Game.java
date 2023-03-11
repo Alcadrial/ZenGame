@@ -1,14 +1,11 @@
 package com.alcadrial.zengame.game;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.openzen.zencode.java.ZenCodeType.Caster;
 import org.openzen.zencode.java.ZenCodeType.Getter;
 import org.openzen.zencode.java.ZenCodeType.Method;
-import org.openzen.zencode.java.ZenCodeType.Setter;
 
 import com.alcadra.threads.TimeThread;
 import com.alcadrial.zengame.ZenClass;
@@ -20,8 +17,8 @@ import lc.kra.system.keyboard.event.GlobalKeyListener;
 @ZenClass
 public abstract class Game {
 	
-	private String name;
 	private int id;
+	private String name;
 	private GlobalKeyboardHook keyboardHook;
 	private Map<ZenKeyboardListener, GlobalKeyListener> listenerMap;
 	private int tps;
@@ -32,16 +29,17 @@ public abstract class Game {
 	private Runnable onTerminateAction;
 	protected TimeThread executionThread;
 	
-	public Game(String name, int id)
+	public Game(int id, GameBuilder<? extends Game> builder)
 	{
-		this.name = Objects.requireNonNull(name);
 		this.id = id;
-		tps = 60;
-		onStartAction = () -> {};
-		onLoopAction = p -> {};
-		onPauseAction = () -> {};
-		onResumeAction = () -> {};
-		onTerminateAction = () -> {};
+		name = builder.getName();
+		listenerMap = builder.getListenerMap();
+		tps = builder.getTps();
+		onStartAction = builder.getOnStartAction();
+		onLoopAction = builder.getOnLoopAction();
+		onPauseAction = builder.getOnPauseAction();
+		onResumeAction = builder.getOnResumeAction();
+		onTerminateAction = builder.getOnTerminateAction();
 	}
 	
 	public void start()
@@ -87,7 +85,7 @@ public abstract class Game {
 	protected void startSequence()
 	{
 		keyboardHook = new GlobalKeyboardHook(true);
-		listenerMap = new HashMap<>();
+		for (GlobalKeyListener listener : listenerMap.values()) keyboardHook.addKeyListener(listener);
 		onStartAction.run();
 	}
 	
@@ -108,20 +106,6 @@ public abstract class Game {
 	}
 	
 	@Method
-	public void addKeyListener(ZenKeyboardListener listener)
-	{
-		KeyboardListenerWrapper wrapper = new KeyboardListenerWrapper(listener);
-		listenerMap.put(listener, wrapper);
-		keyboardHook.addKeyListener(wrapper);
-	}
-	
-	@Method
-	public void removeKeyListener(ZenKeyboardListener listener)
-	{
-		keyboardHook.removeKeyListener(listenerMap.remove(listener));
-	}
-	
-	@Method
 	public boolean isKeyHeldDown(int virtualKeyCode)
 	{
 		return keyboardHook.isKeyHeldDown(virtualKeyCode);
@@ -133,59 +117,28 @@ public abstract class Game {
 		return keyboardHook.areKeysHeldDown(virtualKeyCodes);
 	}
 	
-	@Getter("name")
-	public String getName()
-	{
-		return name;
-	}
-	
 	@Getter("id")
 	public int getId()
 	{
 		return id;
 	}
 	
-	@Setter("tps")
-	public void setTps(int tps)
+	@Getter("name")
+	public String getName()
 	{
-		if (tps <= 0) this.tps = 1;
-		else this.tps = tps;
+		return name;
 	}
 	
-	@Setter
-	public void onStart(Runnable action)
+	@Getter("tps")
+	public int getTps()
 	{
-		onStartAction = action;
-	}
-	
-	@Setter
-	public void onLoop(Consumer<Float> action)
-	{
-		onLoopAction = action;
-	}
-	
-	@Setter
-	public void onPause(Runnable action)
-	{
-		onPauseAction = action;
-	}
-	
-	@Setter
-	public void onResume(Runnable action)
-	{
-		onResumeAction = action;
-	}
-	
-	@Setter
-	public void onTerminate(Runnable action)
-	{
-		onTerminateAction = action;
+		return tps;
 	}
 	
 	@Caster
 	@Override
 	public String toString()
 	{
-		return "Game{name=" + name + ", id=" + id + "}";
+		return "Game{id=" + id + ", name=" + name + "}";
 	}
 }
