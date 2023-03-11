@@ -104,7 +104,7 @@ public class Zen {
 		}
 	}
 	
-	public static loop(partial as float?) as void
+	public static loop(partial as float) as void
 	{
 		if (moved)
 		{

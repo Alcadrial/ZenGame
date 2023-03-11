@@ -112,7 +112,7 @@ public class Pacman {
 		}
 	}
 	
-	public static loop(partial as float?) as void
+	public static loop(partial as float) as void
 	{
 		clock++;
 		var next as char;

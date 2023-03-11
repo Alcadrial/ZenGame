@@ -1,12 +1,11 @@
 package com.alcadrial.zengame.game;
 
-import java.util.function.Consumer;
-
 import org.openzen.zencode.java.ZenCodeType.Caster;
 import org.openzen.zencode.java.ZenCodeType.Getter;
 import org.openzen.zencode.java.ZenCodeType.Method;
 
 import com.alcadra.threads.TimeThread;
+import com.alcadrial.zengame.FloatConsumer;
 import com.alcadrial.zengame.ZenClass;
 
 @ZenClass
@@ -16,11 +15,13 @@ public abstract class Game {
 	private String name;
 	private int tps;
 	private Runnable onStartAction;
-	private Consumer<Float> onLoopAction;
+	private FloatConsumer onLoopAction;
 	private Runnable onPauseAction;
 	private Runnable onResumeAction;
 	private Runnable onTerminateAction;
 	protected TimeThread executionThread;
+	private long startTimestamp;
+	private long currentTimestamp;
 	
 	public Game(int id, GameBuilder<? extends Game> builder)
 	{
@@ -76,6 +77,7 @@ public abstract class Game {
 	
 	protected void startSequence()
 	{
+		currentTimestamp = startTimestamp = System.currentTimeMillis();
 		onStartAction.run();
 	}
 	
@@ -86,6 +88,7 @@ public abstract class Game {
 	
 	protected void loopSequence(float partialSecond)
 	{
+		currentTimestamp = System.currentTimeMillis();
 		onLoopAction.accept(partialSecond);
 	}
 	
@@ -110,6 +113,24 @@ public abstract class Game {
 	public int getTps()
 	{
 		return tps;
+	}
+	
+	@Getter("startTimestamp")
+	public long getStartTimestamp()
+	{
+		return startTimestamp;
+	}
+	
+	@Getter("currentTimestamp")
+	public long getCurrentTimestamp()
+	{
+		return currentTimestamp;
+	}
+	
+	@Getter("enlapsedTime")
+	public long getEnlapsedTime()
+	{
+		return currentTimestamp - startTimestamp;
 	}
 	
 	@Caster

@@ -6,7 +6,7 @@ import org.openzen.zencode.java.ZenCodeType.Name;
 import com.alcadrial.zengame.ZenClass;
 
 @ZenClass
-@Name("zengame.Action")
+@Name(ExtraPackage.PACKAGE + "Action")
 public enum ZenAction {
 	
 	MOVING,

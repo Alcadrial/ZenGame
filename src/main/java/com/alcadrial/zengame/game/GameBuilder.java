@@ -1,10 +1,9 @@
 package com.alcadrial.zengame.game;
 
-import java.util.function.Consumer;
-
 import org.openzen.zencode.java.ZenCodeType.Method;
 import org.openzen.zencode.java.ZenCodeType.Setter;
 
+import com.alcadrial.zengame.FloatConsumer;
 import com.alcadrial.zengame.ZenClass;
 
 @ZenClass
@@ -13,7 +12,7 @@ public abstract class GameBuilder<G extends Game> {
 	private String name;
 	private int tps;
 	private Runnable onStartAction;
-	private Consumer<Float> onLoopAction;
+	private FloatConsumer onLoopAction;
 	private Runnable onPauseAction;
 	private Runnable onResumeAction;
 	private Runnable onTerminateAction;
@@ -38,7 +37,7 @@ public abstract class GameBuilder<G extends Game> {
 	}
 	
 	@Setter
-	public void onLoop(Consumer<Float> action)
+	public void onLoop(FloatConsumer action)
 	{
 		onLoopAction = action;
 	}
@@ -76,7 +75,7 @@ public abstract class GameBuilder<G extends Game> {
 		return onStartAction;
 	}
 	
-	public Consumer<Float> getOnLoopAction()
+	public FloatConsumer getOnLoopAction()
 	{
 		return onLoopAction;
 	}
