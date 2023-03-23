@@ -1,0 +1,64 @@
+plugins {
+	id "java"
+    id "eclipse"
+    id "maven-publish"
+}
+
+configurations {
+	zipArchive
+} 
+
+version = "1.0"
+group = "com.alcadrial.zengame"
+archivesBaseName = "ZenGame-${version}"
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+println("Zen Game")
+
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/java")
+            srcDirs("src/main/scripts")
+            srcDirs("src/main/resources")
+        }
+    }
+ }
+
+repositories {
+	mavenCentral()
+    flatDir {
+        dir "libs"
+    }
+    
+    maven {
+    	name = "ZenCode"
+    	url = "https://maven.openzen.org/"
+    }
+}
+
+dependencies {
+	
+	implementation(":Kroperties")
+	//implementation("org.openzen.zencode:zencode-javascripting:${zenScriptVersion}")
+	implementation("net.sf.trove4j:trove4j:3.0.3")
+	implementation("org.ow2.asm:asm-debug-all:6.0_BETA")
+	implementation(":ZenCode")
+	runtimeOnly(":ZenCode-sources")
+    implementation("io.github.classgraph:classgraph:4.8.149")
+}
+
+jar {
+    manifest {
+        attributes([
+                "Specification-Title"     : "Zen Game",
+                "Specification-Vendor"    : "Alcadra",
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : project.jar.archiveVersion,
+                "Implementation-Vendor"   : "alcadra",
+                "Implementation-Timestamp": new Date().format("dd/MM/yyyy HH:mm:ss")
+        ])
+    }
+}
