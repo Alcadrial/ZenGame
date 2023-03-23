@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 import org.openzen.zencode.java.ZenCodeType.Method;
 import org.openzen.zencode.java.ZenCodeType.Name;
 
+import com.alcadrial.zengame.Properties;
 import com.alcadrial.zengame.ZenClass;
 
 @ZenClass
@@ -28,25 +29,25 @@ public class ImageLoader {
 		INVALID_IMAGE = new BufferedImage(16, 16, BufferedImage.TYPE_4BYTE_ABGR);
 		Graphics g = INVALID_IMAGE.getGraphics();
 		g.setColor(Color.RED);
-		g.fillRect(0, 0, 1, 1);
-		g.fillRect(0, 0, 1, 1);
-		g.fillRect(0, 0, 1, 1);
-		g.fillRect(0, 0, 1, 1);
-		g.fillRect(0, 0, 1, 1);
-		g.fillRect(0, 0, 1, 1);
-		g.fillRect(0, 0, 1, 1);
+		for (int i = 0; i < 16; i++)
+		{
+			g.fillRect(i, i, 1, 1);
+			g.fillRect(i, 16 - i - 1, 1, 1);
+		}
 	}
 	
 	@Method
-	public static Image getImage(String pathname)
+	public static Image getImage(ZenFile file)
 	{
-		return LOADED_IMAGES.computeIfAbsent(new File(pathname), file -> {
+		return LOADED_IMAGES.computeIfAbsent(new File(Properties.ASSETS_PATH.getValue(), file.getFile().getPath()), file0 -> {
 			try
 			{
-				return ImageIO.read(file);
+				return ImageIO.read(file0);
 			}
 			catch (IOException e)
-			{}
+			{
+				System.out.println("Image not found at " + file0);
+			}
 			return INVALID_IMAGE;
 		});
 	}
