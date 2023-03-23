@@ -7,10 +7,12 @@ import java.util.Scanner;
 import org.openzen.zencode.java.ZenCodeType.Method;
 
 import com.alcadra.threads.TimeThread;
+import com.alcadrial.zengame.ZenClass;
 
 import nonapi.io.github.classgraph.utils.VersionFinder;
 import nonapi.io.github.classgraph.utils.VersionFinder.OperatingSystem;
 
+@ZenClass
 public class CommandLineGame extends Game {
 	
 	private Scanner in;

@@ -12,12 +12,9 @@ import org.openzen.zencode.java.ZenCodeType.Setter;
 
 import com.alcadra.threads.TimeThread;
 import com.alcadrial.zengame.ZenClass;
-import com.alcadrial.zengame.script.keyboard.KeyContext;
-import com.alcadrial.zengame.script.keyboard.KeyPressType;
 import com.alcadrial.zengame.script.keyboard.ZenKeyboardListener;
 
 import lc.kra.system.keyboard.GlobalKeyboardHook;
-import lc.kra.system.keyboard.event.GlobalKeyEvent;
 import lc.kra.system.keyboard.event.GlobalKeyListener;
 
 @ZenClass
@@ -190,34 +187,5 @@ public abstract class Game {
 	public String toString()
 	{
 		return "Game{name=" + name + ", id=" + id + "}";
-	}
-	
-	private class KeyboardListenerWrapper implements GlobalKeyListener {
-		
-		private ZenKeyboardListener listener;
-		
-		public KeyboardListenerWrapper(ZenKeyboardListener listener)
-		{
-			this.listener = listener;
-		}
-		
-		@Override
-		public void keyPressed(GlobalKeyEvent event)
-		{
-			try
-			{
-				listener.handle(new KeyContext(event, KeyPressType.PRESS));
-			}
-			catch (Throwable e)
-			{
-				e.printStackTrace(System.out);
-			}
-		}
-		
-		@Override
-		public void keyReleased(GlobalKeyEvent event)
-		{
-			listener.handle(new KeyContext(event, KeyPressType.RELEASE));
-		}
 	}
 }

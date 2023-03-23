@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Scanner;
 
 import org.openzen.zencode.java.ScriptingEngine;
 import org.openzen.zencode.java.logger.ScriptingEngineStreamLogger;
@@ -12,7 +14,10 @@ import org.openzen.zencode.shared.FileSourceFile;
 import org.openzen.zencode.shared.SourceFile;
 import org.openzen.zenscript.codemodel.FunctionParameter;
 import org.openzen.zenscript.codemodel.SemanticModule;
+import org.openzen.zenscript.lexer.ZSTokenType;
 import org.openzen.zenscript.parser.PrefixedBracketParser;
+import org.openzen.zenscript.parser.expression.ParsedExpression;
+import org.openzen.zenscript.parser.statements.ParsedLambdaFunctionBody;
 
 import com.alcadrial.kroperties.Property;
 import com.alcadrial.zengame.game.Game;
@@ -33,8 +38,6 @@ public class ZenGame {
 	public static void main(String[] args)
 	{
 		Property.parseProperties(args, Properties.PROPERTIES);
-		
-		System.out.println("Zen Game Z");
 		try
 		{
 			File logFile = new File("zenscriptLog.txt");
@@ -67,25 +70,51 @@ public class ZenGame {
 			
 			bracketParser.register("action", new EnumBracketParser<>(zengame, zengame.addClass(ZenAction.class)));
 			
-			SemanticModule scripts = engine.createScriptedModule("scripts", sourceFiles, bracketParser, FunctionParameter.NONE, ZENGAME_MODULE);
+			SemanticModule scripts = engine.createScriptedModule("zengame", sourceFiles, bracketParser, FunctionParameter.NONE, ZENGAME_MODULE);
 			if (!scripts.isValid()) return;
 			
 			engine.registerCompiled(scripts);
 			engine.run();
 			
+			List<Game> games = GameRegistry.getGames();
+			List<String> names = games.stream().map(Game::getName).toList();
+			
 			String gameName = Properties.GAME.getValue();
-			if (gameName != null)
+			
+			if (gameName == null || !names.contains(gameName))
 			{
-				Game game = GameRegistry.getGame(gameName);
-				if (game != null)
+				System.out.print("Available Games: ");
+				for (String name : names.subList(0, names.size() - 1))
 				{
-					game.start();
+					System.out.print(name + " - ");
+				}
+				System.out.println(names.get(names.size() - 1));
+				System.out.println();
+				System.out.print("Select the game: ");
+				try (Scanner input = new Scanner(System.in))
+				{
+					gameName = input.next();
+					while (!names.contains(gameName))
+					{
+						System.out.print("Unknown game, reselect it: ");
+						gameName = input.next();
+					}
 				}
 			}
+			GameRegistry.getGame(gameName).start();
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace(System.out);
 		}
 	}
+	
+	/**
+	 * {@link ZSTokenType}
+	 * <p>
+	 * {@link ParsedLambdaFunctionBody}
+	 * {@link ParsedExpression}
+	 */
+	@SuppressWarnings("unused")
+	private static final Object INTERNAL_INFO = null;
 }
