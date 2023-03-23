@@ -9,7 +9,7 @@ import com.alcadrial.zengame.FloatConsumer;
 import com.alcadrial.zengame.ZenClass;
 
 @ZenClass
-public abstract class Game {
+public abstract class Game implements AutoCloseable {
 	
 	private int id;
 	private String name;
@@ -22,6 +22,8 @@ public abstract class Game {
 	protected TimeThread executionThread;
 	private long startTimestamp;
 	private long currentTimestamp;
+	private long startNanoTimestamp;
+	private long currentNanoTimestamp;
 	
 	public Game(int id, GameBuilder<? extends Game> builder)
 	{
@@ -57,6 +59,16 @@ public abstract class Game {
 		executionThread.start();
 	}
 	
+	public void join()
+	{
+		try
+		{
+			executionThread.join();
+		}
+		catch (InterruptedException e)
+		{}
+	}
+	
 	@Method
 	public void pause()
 	{
@@ -78,6 +90,7 @@ public abstract class Game {
 	protected void startSequence()
 	{
 		currentTimestamp = startTimestamp = System.currentTimeMillis();
+		currentNanoTimestamp = startNanoTimestamp = System.nanoTime();
 		onStartAction.run();
 	}
 	
@@ -89,6 +102,7 @@ public abstract class Game {
 	protected void loopSequence(float partialSecond)
 	{
 		currentTimestamp = System.currentTimeMillis();
+		currentNanoTimestamp = System.nanoTime();
 		onLoopAction.accept(partialSecond);
 	}
 	
@@ -131,6 +145,24 @@ public abstract class Game {
 	public long getEnlapsedTime()
 	{
 		return currentTimestamp - startTimestamp;
+	}
+	
+	@Getter("startNanoTimestamp")
+	public long getStartNanoTimestamp()
+	{
+		return startNanoTimestamp;
+	}
+	
+	@Getter("currentNanoTimestamp")
+	public long getCurrentNanoTimestamp()
+	{
+		return currentNanoTimestamp;
+	}
+	
+	@Getter("nanoEnlapsedTime")
+	public long getNanoEnlapsedTime()
+	{
+		return currentNanoTimestamp - startNanoTimestamp;
 	}
 	
 	@Caster

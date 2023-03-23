@@ -130,7 +130,10 @@ public class ZenGame {
 					}
 				}
 			}
-			GameRegistry.getGame(gameName).start();
+			Game game = GameRegistry.getGame(gameName);
+			game.start();
+			game.join();
+			game.close();
 		}
 		catch (Exception e)
 		{

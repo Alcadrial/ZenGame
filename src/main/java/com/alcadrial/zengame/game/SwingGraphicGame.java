@@ -132,4 +132,10 @@ public class SwingGraphicGame extends Game implements WindowListener {
 			paintAction.run();
 		}
 	}
+	
+	@Override
+	public void close() throws Exception
+	{
+		window.dispose();
+	}
 }

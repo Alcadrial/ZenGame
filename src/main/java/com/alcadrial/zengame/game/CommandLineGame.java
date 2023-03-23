@@ -214,4 +214,15 @@ public class CommandLineGame extends Game implements NativeKeyListener {
 		if (!running) return null;
 		return in.next();
 	}
+	
+	@Override
+	public void close()
+	{
+		try
+		{
+			GlobalScreen.unregisterNativeHook();
+		}
+		catch (NativeHookException e)
+		{}
+	}
 }
