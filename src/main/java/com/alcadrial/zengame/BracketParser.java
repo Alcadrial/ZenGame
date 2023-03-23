@@ -7,8 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(TYPE)
-public @interface ZenClass {
+@Target(METHOD)
+public @interface BracketParser {
 	
-	boolean value() default true;
+	String value();
 }

@@ -2,6 +2,9 @@ package com.alcadrial.zengame;
 
 import java.io.File;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -10,10 +13,12 @@ import java.util.Scanner;
 import org.openzen.zencode.java.ScriptingEngine;
 import org.openzen.zencode.java.logger.ScriptingEngineStreamLogger;
 import org.openzen.zencode.java.module.JavaNativeModule;
+import org.openzen.zencode.shared.CodePosition;
 import org.openzen.zencode.shared.FileSourceFile;
 import org.openzen.zencode.shared.SourceFile;
 import org.openzen.zenscript.codemodel.FunctionParameter;
 import org.openzen.zenscript.codemodel.SemanticModule;
+import org.openzen.zenscript.lexer.ZSTokenParser;
 import org.openzen.zenscript.lexer.ZSTokenType;
 import org.openzen.zenscript.parser.PrefixedBracketParser;
 import org.openzen.zenscript.parser.expression.ParsedExpression;
@@ -23,11 +28,11 @@ import com.alcadrial.kroperties.Property;
 import com.alcadrial.zengame.game.Game;
 import com.alcadrial.zengame.game.GameRegistry;
 import com.alcadrial.zengame.script.GlobalZenUtils;
-import com.alcadrial.zengame.script.extra.ZenAction;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
+import io.github.classgraph.MethodInfo;
 import io.github.classgraph.ScanResult;
 
 public class ZenGame {
@@ -49,14 +54,37 @@ public class ZenGame {
 			zengame.addGlobals(GlobalZenUtils.class);
 			
 			ClassGraph classGraph = new ClassGraph();
-			ScanResult result = classGraph.acceptPackages("com.alcadrial").enableClassInfo().enableAnnotationInfo().scan();
+			ScanResult result = classGraph.acceptPackages("com.alcadrial").enableClassInfo().enableMethodInfo().enableAnnotationInfo().scan();
 			ClassInfoList zenClasses = result.getClassesWithAnnotation(ZenClass.class);
+			PrefixedBracketParser bracketParser = new PrefixedBracketParser(null);
 			
 			for (ClassInfo c : zenClasses)
 			{
-				Class<?> klass = ZenGame.class.getClassLoader().loadClass(c.getName());
-				zengame.addClass(klass);
+				Class<?> klass = c.loadClass();
+				if (klass.getAnnotation(ZenClass.class).value()) zengame.addClass(klass);
 				zengame.addGlobals(klass);
+				for (MethodInfo m : c.getMethodInfo()) if (m.hasAnnotation(BracketParser.class))
+				{
+					Method method = m.loadClassAndGetMethod();
+					if (Modifier.isStatic(method.getModifiers()) && ParsedExpression.class.isAssignableFrom(method.getReturnType()))
+					{
+						Class<?>[] parameters = method.getParameterTypes();
+						if (parameters.length == 2 && parameters[0].isAssignableFrom(CodePosition.class) && parameters[1].isAssignableFrom(ZSTokenParser.class))
+						{
+							bracketParser.register(method.getAnnotation(BracketParser.class).value(), (position, parser) -> {
+								try
+								{
+									return (ParsedExpression) method.invoke(null, position, parser);
+								}
+								catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+								{}
+								return null;
+							});
+							continue;
+						}
+					}
+					throw new IllegalStateException("Invalid BracketParser (" + method + ") in class " + klass);
+				}
 			}
 			
 			engine.registerNativeProvided(zengame);
@@ -66,9 +94,7 @@ public class ZenGame {
 			SourceFile[] sourceFiles = new SourceFile[scriptFiles.length];
 			for (int i = 0; i < scriptFiles.length; i++) sourceFiles[i] = new FileSourceFile(scriptFiles[i].getName(), scriptFiles[i]);
 			
-			PrefixedBracketParser bracketParser = new PrefixedBracketParser(null);
-			
-			bracketParser.register("action", new EnumBracketParser<>(zengame, zengame.addClass(ZenAction.class)));
+			// bracketParser.register("action", new EnumBracketParser<>(zengame, zengame.addClass(ZenAction.class)));
 			
 			SemanticModule scripts = engine.createScriptedModule("zengame", sourceFiles, bracketParser, FunctionParameter.NONE, ZENGAME_MODULE);
 			if (!scripts.isValid()) return;
