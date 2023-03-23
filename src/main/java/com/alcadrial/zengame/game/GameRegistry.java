@@ -22,20 +22,22 @@ public class GameRegistry {
 		return List.copyOf(GAMES.values());
 	}
 	
-	@Method
-	public static GraphicGame registerGraphicGame(String name)
+	public static <G extends Game> G register(GameBuilder<G> gameBuilder)
 	{
-		Game g = GAMES.computeIfAbsent(name, n -> new GraphicGame(n, GAMES.size()));
-		if (g instanceof GraphicGame gg) return gg;
-		throw new IllegalStateException("The game \"" + name + "\" has been already registered as a Command Line Game");
+		G game = gameBuilder.build(GAMES.size());
+		if (GAMES.putIfAbsent(game.getName(), game) != null) throw new IllegalStateException("The game \"" + game.getName() + "\" has been already registered");
+		return game;
 	}
 	
 	@Method
-	public static CommandLineGame registerCommandLineGame(String name)
+	public static CommandLineGame register(CommandLineGameBuilder gameBuilder)
 	{
-		Game g = GAMES.computeIfAbsent(name, n -> new CommandLineGame(n, GAMES.size()));
-		if (g instanceof CommandLineGame gg) return gg;
-		throw new IllegalStateException("The game \"" + name + "\" has been already registered as a Graphic Game");
+		return register((GameBuilder<CommandLineGame>) gameBuilder);
 	}
 	
+	@Method
+	public static SwingGraphicGame register(SwingGraphicGameBuilder gameBuilder)
+	{
+		return register((GameBuilder<SwingGraphicGame>) gameBuilder);
+	}
 }

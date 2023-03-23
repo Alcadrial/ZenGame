@@ -1,14 +1,6 @@
-import zengame.Action;
-import zengame.GameRegistry;
-import zengame.Game;
 import zengame.CommandLineGame;
-import zengame.keyboard.KeyboardListener;
+import zengame.GameRegistry;
 import zengame.keyboard.KeyContext;
-import zengame.keyboard.KeyPressType;
-
-println("--------------------------------");
-println("              ZEN               ");
-println("--------------------------------");
 
 public class Zen {
 	public static final var screen = [
@@ -37,18 +29,20 @@ public class Zen {
 	
 	public static register() as void
 	{
-		game = GameRegistry.registerCommandLineGame("zen");
+		var builder = CommandLineGame.create("zen");
+		
+		builder.onStart = () => Zen.start();
+		builder.onLoop = partial => Zen.loop(partial);
+		builder.onTerminate = () => Zen.terminate();
+		builder.addKeyListener(context => Zen.keyListener(context));
+		
+		game = GameRegistry.register(builder);
 		
 		println(game);
-		
-		game.onStart = () => Zen.start();
-		game.onLoop = partial => Zen.loop(partial);
-		game.onTerminate = () => Zen.terminate();
 	}
 	
 	public static start() as void
 	{
-		game.addKeyListener(context => Zen.keyListener(context));
 		game.println("Press 'ESC' to exit in any moment");
 	}
 	
@@ -123,10 +117,7 @@ public class Zen {
 			
 			for row in screen
 			{
-				for i in 0 .. row.length
-				{
-					game.print(row[i]);
-				}
+				for c in row game.print(c);
 				game.println();
 			}
 			
@@ -141,6 +132,10 @@ public class Zen {
 		game.println();
 	}
 }
+
+println("--------------------------------");
+println("              ZEN               ");
+println("--------------------------------");
 
 Zen.register();
 

@@ -15,18 +15,24 @@ import nonapi.io.github.classgraph.utils.VersionFinder.OperatingSystem;
 @ZenClass
 public class CommandLineGame extends Game {
 	
+	@Method
+	public static CommandLineGameBuilder create(String name)
+	{
+		return new CommandLineGameBuilder(name);
+	}
+	
 	private Scanner in;
 	private PrintStream out;
 	private boolean living;
 	private boolean running;
 	
-	public CommandLineGame(String name, int id)
+	public CommandLineGame(int id, CommandLineGameBuilder builder)
 	{
-		super(name, id);
+		super(id, builder);
+		in = new Scanner(builder.getInput());
+		out = new PrintStream(builder.getOutput());
 		living = false;
 		running = false;
-		in = new Scanner(System.in);
-		out = new PrintStream(System.out);
 	}
 	
 	@Override

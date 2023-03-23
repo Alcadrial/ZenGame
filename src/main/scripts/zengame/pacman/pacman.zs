@@ -1,15 +1,9 @@
-import zengame.Action;
+import zengame.CommandLineGame;
 import zengame.GameRegistry;
-import zengame.Game;
-import zengame.keyboard.KeyboardListener;
 import zengame.keyboard.KeyContext;
-import zengame.keyboard.KeyPressType;
 
-println("--------------------------------");
-println("              ZEN               ");
-println("--------------------------------");
 
-public class Vars {
+public class Pacman {
 	
 	public static final var screen = [
 	        "                            ",
@@ -57,23 +51,40 @@ public class Vars {
 	public static var direction = 0;
 	public static var clock = 0;
 	public static var remaining = 245;
+	public static var game as CommandLineGame;
 
 	public static move(x as int, y as int) as void
 	{
-		Vars.screen[Vars.y][Vars.x] = ' ';
-		Vars.screen[y][x] = 'C';
-		Vars.y = y;
-		Vars.x = x;
-		Vars.moved = true;
+		screen[Pacman.y][Pacman.x] = ' ';
+		screen[y][x] = 'C';
+		Pacman.y = y;
+		Pacman.x = x;
+		moved = true;
 	}
-}
-
-var game = GameRegistry.registerCommandLineGame("pacman");
-
-println(game);
-
-game.onStart = () => {
-	game.addKeyListener(context => {
+	
+	public static register() as void
+	{
+		var builder = CommandLineGame.create("pacman");
+		
+		builder.onStart = () => Pacman.start();
+		builder.onLoop = partial => Pacman.loop(partial);
+		builder.onTerminate = () => Pacman.terminate();
+		builder.addKeyListener(context => Pacman.keyListener(context));
+		builder.tps = 4;
+		
+		game = GameRegistry.register(builder);
+		
+		println(game);
+	}
+	
+	public static start() as void
+	{
+		game.println("Press 'ESC' to exit in any moment");
+		screen[y][x] = "C";
+	}
+	
+	public static keyListener(context as KeyContext) as void
+	{
 		if (context.virtualKeyCode == KeyContext.KEY_ESCAPE) game.terminate();
 		if (context.pressed)
 		{
@@ -95,115 +106,112 @@ game.onStart = () => {
 					break;
 			}*/
 			
-			if (context.virtualKeyCode == KeyContext.KEY_UP) Vars.direction = Vars.UP;
-			else if (context.virtualKeyCode == KeyContext.KEY_LEFT) Vars.direction = Vars.LEFT;
-			else if (context.virtualKeyCode == KeyContext.KEY_DOWN) Vars.direction = Vars.DOWN;
-			else if (context.virtualKeyCode == KeyContext.KEY_RIGHT) Vars.direction = Vars.RIGHT;
+			if (context.virtualKeyCode == KeyContext.KEY_UP) direction = UP;
+			else if (context.virtualKeyCode == KeyContext.KEY_LEFT) direction = LEFT;
+			else if (context.virtualKeyCode == KeyContext.KEY_DOWN) direction = DOWN;
+			else if (context.virtualKeyCode == KeyContext.KEY_RIGHT) direction = RIGHT;
 		}
-	});
-	game.println("Press 'ESC' to exit in any moment");
-	Vars.screen[Vars.y][Vars.x] = "C";
-};
-game.onLoop = partial => {
-
-	Vars.clock++;
-	//	Vars.screen[11 - Vars.lastY - 2][Vars.lastX + 1] = ' ';
-	//	Vars.screen[11 - Vars.y - 2][Vars.x + 1] = '*';
-	//	Vars.lastX = Vars.x;
-	//	Vars.lastY = Vars.y;
-	switch Vars.direction
-	{
-		case 1:
-			var next = Vars.screen[Vars.y - 1][Vars.x];
-			if (next == ' ')
-			{
-				Vars.move(Vars.x, Vars.y - 1);
-			}
-			else if (next == '·')
-			{
-				Vars.move(Vars.x, Vars.y - 1);
-				Vars.remaining--;
-			}
-			break;
-		case 2:
-			var next = Vars.screen[Vars.y][Vars.x - 1];
-			if (next == ' ')
-			{
-				if (Vars.x == 1) Vars.move(26, Vars.y);
-				else Vars.move(Vars.x - 1, Vars.y);
-			}
-			else if (next == '·')
-			{
-				Vars.move(Vars.x - 1, Vars.y);
-				Vars.remaining--;
-			}
-			break;
-		case 3:
-			var next = Vars.screen[Vars.y + 1][Vars.x];
-			if (next == ' ')
-			{
-				Vars.move(Vars.x, Vars.y + 1);
-			}
-			else if (next == '·')
-			{
-				Vars.move(Vars.x, Vars.y + 1);
-				Vars.remaining--;
-			}
-			break;
-		case 4:
-			var next = Vars.screen[Vars.y][Vars.x + 1];
-			if (next == ' ')
-			{
-				if (Vars.x == 26) Vars.move(1, Vars.y);
-				else Vars.move(Vars.x + 1, Vars.y);
-			}
-			else if (next == '·')
-			{
-				Vars.move(Vars.x + 1, Vars.y);
-				Vars.remaining--;
-			}
-			break;
 	}
-	if (Vars.moved || Vars.clock == 5)
+	
+	public static loop(partial as float?) as void
 	{
-		if (Vars.clock == 5) Vars.clock = 0;
-		game.clear();
-		for row in Vars.screen
+		clock++;
+		var next as char;
+		switch direction
 		{
-			for i in 0 .. row.length
+			case 1:
+				next = screen[y - 1][x];
+				if (next == ' ')
+				{
+					move(x, y - 1);
+				}
+				else if (next == '·')
+				{
+					move(x, y - 1);
+					remaining--;
+				}
+				break;
+			case 2:
+				next = screen[y][x - 1];
+				if (next == ' ')
+				{
+					if (x == 1) move(26, y);
+					else move(x - 1, y);
+				}
+				else if (next == '·')
+				{
+					move(x - 1, y);
+					remaining--;
+				}
+				break;
+			case 3:
+				next = screen[y + 1][x];
+				if (next == ' ')
+				{
+					move(x, y + 1);
+				}
+				else if (next == '·')
+				{
+					move(x, y + 1);
+					remaining--;
+				}
+				break;
+			case 4:
+				next = screen[y][x + 1];
+				if (next == ' ')
+				{
+					if (x == 26) move(1, y);
+					else move(x + 1, y);
+				}
+				else if (next == '·')
+				{
+					move(x + 1, y);
+					remaining--;
+				}
+				break;
+		}
+		if (moved || clock == 5)
+		{
+			if (clock == 5) clock = 0;
+			game.clear();
+			for row in screen
 			{
-				game.print(row[i]);
+				for i in 0 .. row.length
+				{
+					game.print(row[i]);
+				}
+				game.println();
 			}
+		}
+	}
+	
+	public static terminate() as void
+	{
+		var row = screen[16];
+		row[9] = 'G';
+		row[10] = 'A';
+		row[11] = 'M';
+		row[12] = 'E';
+		row[13] = ' ';
+		row[14] = ' ';
+		row[15] = 'O';
+		row[16] = 'V';
+		row[17] = 'E';
+		row[18] = 'R';
+		game.clear();
+		for row0 in screen
+		{
+			for c in row0 game.print(c);
 			game.println();
 		}
 	}
-};
-game.onTerminate = () => {
-	
-	var row = Vars.screen[16];
-	row[9] = 'G';
-	row[10] = 'A';
-	row[11] = 'M';
-	row[12] = 'E';
-	row[13] = ' ';
-	row[14] = ' ';
-	row[15] = 'O';
-	row[16] = 'V';
-	row[17] = 'E';
-	row[18] = 'R';
+}
 
-	game.clear();
-	for row in Vars.screen
-	{
-		for i in 0 .. row.length
-		{
-			game.print(row[i]);
-		}
-		game.println();
-	}
-};
+println("--------------------------------");
+println("              ZEN               ");
+println("--------------------------------");
 
-game.tps = 4;
+Pacman.register();
 
 println("--------------------------------");
 println("              END               ");

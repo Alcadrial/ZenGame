@@ -3,16 +3,23 @@ package com.alcadrial.zengame.game;
 import javax.swing.JFrame;
 
 import org.openzen.zencode.java.ZenCodeType.Getter;
+import org.openzen.zencode.java.ZenCodeType.Method;
 
-public class GraphicGame extends Game {
+public class SwingGraphicGame extends Game {
+	
+	@Method
+	public static SwingGraphicGameBuilder create(String name)
+	{
+		return new SwingGraphicGameBuilder(name);
+	}
 	
 	private JFrame window;
 	
-	public GraphicGame(String name, int id)
+	public SwingGraphicGame(int id, SwingGraphicGameBuilder builder)
 	{
-		super(name, id);
+		super(id, builder);
 		window = new JFrame();
-		window.setTitle(name);
+		window.setTitle(builder.getName());
 	}
 	
 	@Override
