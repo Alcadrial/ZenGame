@@ -48,6 +48,7 @@ dependencies {
 	implementation(":ZenCode")
 	runtimeOnly(":ZenCode-sources")
     implementation("io.github.classgraph:classgraph:4.8.149")
+    implementation("lc.kra.system:system-hook:3.8")
 }
 
 jar {
