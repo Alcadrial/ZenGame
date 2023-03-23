@@ -1,24 +1,16 @@
 package com.alcadrial.zengame.game;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import org.openzen.zencode.java.ZenCodeType.Method;
 import org.openzen.zencode.java.ZenCodeType.Setter;
 
 import com.alcadrial.zengame.ZenClass;
-import com.alcadrial.zengame.script.keyboard.ZenKeyboardListener;
-
-import lc.kra.system.keyboard.GlobalKeyboardHook;
-import lc.kra.system.keyboard.event.GlobalKeyListener;
 
 @ZenClass
 public abstract class GameBuilder<G extends Game> {
 	
 	private String name;
-	private GlobalKeyboardHook keyboardHook;
-	private Map<ZenKeyboardListener, GlobalKeyListener> listenerMap;
 	private int tps;
 	private Runnable onStartAction;
 	private Consumer<Float> onLoopAction;
@@ -30,20 +22,6 @@ public abstract class GameBuilder<G extends Game> {
 	{
 		this.name = name;
 		tps = 20;
-	}
-	
-	@Method
-	public void addKeyListener(ZenKeyboardListener listener)
-	{
-		if (listenerMap == null) listenerMap = new HashMap<>();
-		KeyboardListenerWrapper wrapper = new KeyboardListenerWrapper(listener);
-		listenerMap.put(listener, wrapper);
-	}
-	
-	@Method
-	public void removeKeyListener(ZenKeyboardListener listener)
-	{
-		if (listenerMap != null) listenerMap.remove(listener);
 	}
 	
 	@Setter("tps")
@@ -86,16 +64,6 @@ public abstract class GameBuilder<G extends Game> {
 	public String getName()
 	{
 		return name;
-	}
-	
-	public GlobalKeyboardHook getKeyboardHook()
-	{
-		return keyboardHook;
-	}
-	
-	public Map<ZenKeyboardListener, GlobalKeyListener> getListenerMap()
-	{
-		return listenerMap;
 	}
 	
 	public int getTps()
