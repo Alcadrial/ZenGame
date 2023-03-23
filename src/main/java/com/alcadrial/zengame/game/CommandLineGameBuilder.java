@@ -10,13 +10,12 @@ import org.openzen.zencode.java.ZenCodeType.Setter;
 
 import com.alcadrial.zengame.ZenClass;
 import com.alcadrial.zengame.script.keyboard.ZenKeyboardListener;
-
-import lc.kra.system.keyboard.event.GlobalKeyListener;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 
 @ZenClass
 public class CommandLineGameBuilder extends GameBuilder<CommandLineGame> {
 	
-	private Map<ZenKeyboardListener, GlobalKeyListener> listenerMap;
+	private Map<ZenKeyboardListener, NativeKeyListener> listenerMap;
 	private InputStream input;
 	private OutputStream output;
 	
@@ -53,7 +52,7 @@ public class CommandLineGameBuilder extends GameBuilder<CommandLineGame> {
 		this.output = output;
 	}
 	
-	public Map<ZenKeyboardListener, GlobalKeyListener> getListenerMap()
+	public Map<ZenKeyboardListener, NativeKeyListener> getListenerMap()
 	{
 		return listenerMap;
 	}

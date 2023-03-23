@@ -10,7 +10,8 @@ import com.alcadrial.zengame.ZenClass;
 public enum KeyPressType {
 	
 	PRESS,
-	RELEASE;
+	RELEASE,
+	TYPE;
 	
 	@Caster
 	@Override

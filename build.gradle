@@ -48,20 +48,28 @@ dependencies {
 	implementation(":ZenCode")
 	runtimeOnly(":ZenCode-sources")
     implementation("io.github.classgraph:classgraph:4.8.149")
-    implementation("lc.kra.system:system-hook:3.8")
+    //implementation("lc.kra.system:system-hook:3.8") windows-only
+    implementation("com.github.kwhat:jnativehook:2.2.2");
 }
 
-def manifestAttributes = [
-	"Specification-Title"     : name,
-	"Specification-Version"   : version,
-	"Specification-Vendor"    : author,
-	"Implementation-Title"    : name,
-	"Implementation-Version"  : version,
-	"Implementation-Vendor"   : author,
-	"Implementation-Timestamp": new Date().format("dd/MM/yyyy HH:mm:ss"),
-	"Main-Class"              : "com.alcadrial.zengame.ZenGame"
-];
+jar {
+	manifest { 
+		attributes (
+	    	"Specification-Title"     : name,
+			"Specification-Version"   : version,
+			"Specification-Vendor"    : author,
+			"Implementation-Title"    : name,
+			"Implementation-Version"  : version,
+			"Implementation-Vendor"   : author,
+			"Implementation-Timestamp": new Date().format("dd/MM/yyyy HH:mm:ss"),
+			"Main-Class"              : "com.alcadrial.zengame.ZenGame",
+			"Class-Path"              : "."
+    	)
+	}  
 
-jar.manifest.attributes(manifestAttributes)
+	from {
+		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+}
 //sourcesJar.manifest.attributes(manifestAttributes)
 //javadocJar.manifest.attributes(manifestAttributes)

@@ -3,11 +3,10 @@ package com.alcadrial.zengame.game;
 import com.alcadrial.zengame.script.keyboard.KeyContext;
 import com.alcadrial.zengame.script.keyboard.KeyPressType;
 import com.alcadrial.zengame.script.keyboard.ZenKeyboardListener;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 
-import lc.kra.system.keyboard.event.GlobalKeyEvent;
-import lc.kra.system.keyboard.event.GlobalKeyListener;
-
-class KeyboardListenerWrapper implements GlobalKeyListener {
+class KeyboardListenerWrapper implements NativeKeyListener {
 	
 	private ZenKeyboardListener listener;
 	
@@ -17,21 +16,20 @@ class KeyboardListenerWrapper implements GlobalKeyListener {
 	}
 	
 	@Override
-	public void keyPressed(GlobalKeyEvent event)
+	public void nativeKeyPressed(NativeKeyEvent e)
 	{
-		try
-		{
-			listener.handle(new KeyContext(event, KeyPressType.PRESS));
-		}
-		catch (Throwable e)
-		{
-			e.printStackTrace(System.out);
-		}
+		listener.handle(new KeyContext(e, KeyPressType.PRESS));
 	}
 	
 	@Override
-	public void keyReleased(GlobalKeyEvent event)
+	public void nativeKeyReleased(NativeKeyEvent e)
 	{
-		listener.handle(new KeyContext(event, KeyPressType.RELEASE));
+		listener.handle(new KeyContext(e, KeyPressType.RELEASE));
+	}
+	
+	@Override
+	public void nativeKeyTyped(NativeKeyEvent e)
+	{
+		listener.handle(new KeyContext(e, KeyPressType.TYPE));
 	}
 }

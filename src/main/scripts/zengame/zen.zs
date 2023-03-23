@@ -48,7 +48,7 @@ public class Zen {
 	
 	public static keyListener(context as KeyContext) as void
 	{
-		if (context.virtualKeyCode == KeyContext.KEY_ESCAPE) game.terminate();
+		if (context.keyCode == KeyContext.KEY_ESCAPE) game.terminate();
 		if (context.pressed)
 		{
 			/*
@@ -69,7 +69,7 @@ public class Zen {
 			}
 			*/
 			
-			if (context.virtualKeyCode == KeyContext.KEY_UP)
+			if (context.keyCode == KeyContext.KEY_UP)
 			{
 				if (y < maxY) 
 				{
@@ -77,7 +77,7 @@ public class Zen {
 					moved = true;
 				}
 			}
-			else if (context.virtualKeyCode == KeyContext.KEY_LEFT)
+			else if (context.keyCode == KeyContext.KEY_LEFT)
 			{
 				if (x > minX)
 				{
@@ -85,7 +85,7 @@ public class Zen {
 					moved = true;
 				}
 			}
-			else if (context.virtualKeyCode == KeyContext.KEY_RIGHT) 
+			else if (context.keyCode == KeyContext.KEY_RIGHT) 
 			{
 				if (x < maxX)
 				{
@@ -93,7 +93,7 @@ public class Zen {
 					moved = true;
 				}
 			}
-			else if (context.virtualKeyCode == KeyContext.KEY_DOWN)
+			else if (context.keyCode == KeyContext.KEY_DOWN)
 			{
 				if (y > minY)
 				{

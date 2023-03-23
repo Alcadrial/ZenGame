@@ -84,7 +84,7 @@ public class Pacman {
 	
 	public static keyListener(context as KeyContext) as void
 	{
-		if (context.virtualKeyCode == KeyContext.KEY_ESCAPE) game.terminate();
+		if (context.keyCode == KeyContext.KEY_ESCAPE) game.terminate();
 		if (context.pressed)
 		{
 			/*
@@ -105,10 +105,10 @@ public class Pacman {
 					break;
 			}*/
 			
-			if (context.virtualKeyCode == KeyContext.KEY_UP) direction = UP;
-			else if (context.virtualKeyCode == KeyContext.KEY_LEFT) direction = LEFT;
-			else if (context.virtualKeyCode == KeyContext.KEY_DOWN) direction = DOWN;
-			else if (context.virtualKeyCode == KeyContext.KEY_RIGHT) direction = RIGHT;
+			if (context.keyCode == KeyContext.KEY_UP) direction = UP;
+			else if (context.keyCode == KeyContext.KEY_LEFT) direction = LEFT;
+			else if (context.keyCode == KeyContext.KEY_DOWN) direction = DOWN;
+			else if (context.keyCode == KeyContext.KEY_RIGHT) direction = RIGHT;
 		}
 	}
 	

@@ -10,14 +10,16 @@ import org.openzen.zencode.java.ZenCodeType.Method;
 import com.alcadra.threads.TimeThread;
 import com.alcadrial.zengame.ZenClass;
 import com.alcadrial.zengame.script.keyboard.ZenKeyboardListener;
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.NativeHookException;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 
-import lc.kra.system.keyboard.GlobalKeyboardHook;
-import lc.kra.system.keyboard.event.GlobalKeyListener;
 import nonapi.io.github.classgraph.utils.VersionFinder;
 import nonapi.io.github.classgraph.utils.VersionFinder.OperatingSystem;
 
 @ZenClass
-public class CommandLineGame extends Game {
+public class CommandLineGame extends Game implements NativeKeyListener {
 	
 	@Method
 	public static CommandLineGameBuilder create(String name)
@@ -25,12 +27,12 @@ public class CommandLineGame extends Game {
 		return new CommandLineGameBuilder(name);
 	}
 	
-	private GlobalKeyboardHook keyboardHook;
-	private Map<ZenKeyboardListener, GlobalKeyListener> listenerMap;
+	private Map<ZenKeyboardListener, NativeKeyListener> listenerMap;
 	private Scanner in;
 	private PrintStream out;
 	private boolean living;
 	private boolean running;
+	private boolean[] pressions = new boolean[NativeKeyEvent.NATIVE_KEY_LAST];
 	
 	public CommandLineGame(int id, CommandLineGameBuilder builder)
 	{
@@ -85,8 +87,17 @@ public class CommandLineGame extends Game {
 	{
 		living = true;
 		running = true;
-		keyboardHook = new GlobalKeyboardHook(true);
-		for (GlobalKeyListener listener : listenerMap.values()) keyboardHook.addKeyListener(listener);
+		try
+		{
+			GlobalScreen.registerNativeHook();
+		}
+		catch (NativeHookException e)
+		{
+			e.printStackTrace(System.out);
+			return;
+		}
+		GlobalScreen.addNativeKeyListener(this);
+		for (NativeKeyListener listener : listenerMap.values()) GlobalScreen.addNativeKeyListener(listener);
 		super.startSequence();
 	}
 	
@@ -106,21 +117,39 @@ public class CommandLineGame extends Game {
 	protected void terminateSequence()
 	{
 		super.terminateSequence();
-		keyboardHook.shutdownHook();
+		try
+		{
+			GlobalScreen.unregisterNativeHook();
+		}
+		catch (NativeHookException e)
+		{}
 		living = false;
 		running = false;
 	}
 	
-	@Method
-	public boolean isKeyHeldDown(int virtualKeyCode)
+	@Override
+	public void nativeKeyPressed(NativeKeyEvent e)
 	{
-		return keyboardHook.isKeyHeldDown(virtualKeyCode);
+		if (e.getRawCode() != NativeKeyEvent.VC_UNDEFINED) pressions[e.getRawCode()] = true;
+	}
+	
+	@Override
+	public void nativeKeyReleased(NativeKeyEvent e)
+	{
+		if (e.getRawCode() != NativeKeyEvent.VC_UNDEFINED) pressions[e.getRawCode()] = false;
 	}
 	
 	@Method
-	public boolean areKeysHeldDown(int... virtualKeyCodes)
+	public boolean isKeyHeldDown(int key)
 	{
-		return keyboardHook.areKeysHeldDown(virtualKeyCodes);
+		return pressions[key];
+	}
+	
+	@Method
+	public boolean areKeysHeldDown(int... keys)
+	{
+		for (int i : keys) if (!pressions[i]) return false;
+		return true;
 	}
 	
 	@Method
