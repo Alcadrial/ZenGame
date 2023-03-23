@@ -1,6 +1,6 @@
-package com.alcadrial.zengame.script.io;
+package com.alcadrial.zengame.script.graphics;
 
-import java.io.File;
+import java.awt.Image;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.List;
@@ -20,15 +20,19 @@ import org.openzen.zenscript.parser.type.ParsedNamedType.ParsedNamePart;
 
 import com.alcadrial.zengame.BracketParser;
 import com.alcadrial.zengame.ZenClass;
+import com.alcadrial.zengame.script.io.ImageLoader;
+import com.alcadrial.zengame.script.io.ZenFile;
 
 @ZenClass
-@Name(IoPackage.PACKAGE + "File")
-public class ZenFile {
+@Name(GraphicsPackage.PACKAGE + "Image")
+public class ZenImage {
 	
-	@BracketParser(name = "file", format = "<file:§ValidPath§")
+	private static final String[] KNOWN_FORMATS = new String[] {"png"};
+	
+	@BracketParser(name = "image", format = "<image:§ValidImageFilePath§>")
 	public static ParsedNewExpression parse(CodePosition position, ZSTokenParser tokens) throws ParseException
 	{
-		return new ParsedNewExpression(position, new ParsedNamedType(position, List.of(ZenFile.class.getAnnotation(Name.class).value().split("\\.")).stream().map(s -> new ParsedNamePart(s, null)).toList()), new ParsedCallArguments(null, List.of(parsePath(position, tokens))));
+		return new ParsedNewExpression(position, new ParsedNamedType(position, List.of(ZenImage.class.getAnnotation(Name.class).value().split("\\.")).stream().map(s -> new ParsedNamePart(s, null)).toList()), new ParsedCallArguments(null, List.of(parsePath(position, tokens))));
 	}
 	
 	public static ParsedExpressionString parsePath(CodePosition position, ZSTokenParser tokens) throws ParseException
@@ -39,7 +43,9 @@ public class ZenFile {
 		{
 			path += tokens.getLastWhitespace() + tokens.next().getContent();
 		}
-		
+		boolean withKnownFormat = false;
+		for (String format : KNOWN_FORMATS) if (path.substring(path.lastIndexOf('.') + 1).equals(format)) withKnownFormat = true;
+		if (!withKnownFormat) path += ".png";
 		try
 		{
 			Path.of(path);
@@ -51,34 +57,24 @@ public class ZenFile {
 		return new ParsedExpressionString(position, path, false);
 	}
 	
-	private File file;
+	private ZenFile file;
+	private Image image;
 	
 	@Constructor
-	public ZenFile(String path)
+	public ZenImage(ZenFile file)
 	{
-		file = new File(path);
+		image = ImageLoader.getImage(file.getFile());
+		this.file = file;
 	}
 	
-	@Getter("path")
-	public String getPath()
-	{
-		return file.getAbsolutePath();
-	}
-	
-	@Getter("isDirectory")
-	public boolean isDirectory()
-	{
-		return file.isDirectory();
-	}
-	
-	@Getter("isFile")
-	public boolean isFile()
-	{
-		return file.isFile();
-	}
-	
-	public File getFile()
+	@Getter("file")
+	public ZenFile getFile()
 	{
 		return file;
+	}
+	
+	public Image getImage()
+	{
+		return image;
 	}
 }

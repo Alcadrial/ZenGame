@@ -8,6 +8,7 @@ import org.openzen.zencode.java.ZenCodeType.Setter;
 
 import com.alcadrial.zengame.script.graphics.ZenColor;
 import com.alcadrial.zengame.script.io.ZenFile;
+import com.alcadrial.zengame.script.mouse.ZenMouseListener;
 
 public class SwingGraphicGameBuilder extends GameBuilder<SwingGraphicGame> {
 	
@@ -15,9 +16,11 @@ public class SwingGraphicGameBuilder extends GameBuilder<SwingGraphicGame> {
 	private int y;
 	private int width;
 	private int height;
+	private boolean decorated;
 	private ZenFile icon;
 	private Color backgroundColor;
 	private Runnable paintAction;
+	private ZenMouseListener onClick;
 	
 	public SwingGraphicGameBuilder(String name)
 	{
@@ -26,6 +29,7 @@ public class SwingGraphicGameBuilder extends GameBuilder<SwingGraphicGame> {
 		y = -1;
 		width = 200;
 		height = 200;
+		decorated = true;
 		backgroundColor = Color.BLACK;
 		paintAction = () -> {};
 	}
@@ -54,6 +58,12 @@ public class SwingGraphicGameBuilder extends GameBuilder<SwingGraphicGame> {
 		this.height = height;
 	}
 	
+	@Setter("decorated")
+	public void setDecorated(boolean decorated)
+	{
+		this.decorated = decorated;
+	}
+	
 	@Setter("icon")
 	public void setIcon(ZenFile icon)
 	{
@@ -70,6 +80,12 @@ public class SwingGraphicGameBuilder extends GameBuilder<SwingGraphicGame> {
 	public void setPaintAction(Runnable paintAction)
 	{
 		this.paintAction = paintAction;
+	}
+	
+	@Setter("onClick")
+	public void setOnClick(ZenMouseListener onClick)
+	{
+		this.onClick = onClick;
 	}
 	
 	public int getX()
@@ -92,6 +108,11 @@ public class SwingGraphicGameBuilder extends GameBuilder<SwingGraphicGame> {
 		return height;
 	}
 	
+	public boolean isDecorated()
+	{
+		return decorated;
+	}
+	
 	public ZenFile getIcon()
 	{
 		return icon;
@@ -105,6 +126,11 @@ public class SwingGraphicGameBuilder extends GameBuilder<SwingGraphicGame> {
 	public Runnable getPaintAction()
 	{
 		return paintAction;
+	}
+	
+	public ZenMouseListener getOnClick()
+	{
+		return onClick;
 	}
 	
 	@Override

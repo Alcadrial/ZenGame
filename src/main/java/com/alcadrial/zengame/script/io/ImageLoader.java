@@ -16,6 +16,7 @@ import org.openzen.zencode.java.ZenCodeType.Name;
 
 import com.alcadrial.zengame.Properties;
 import com.alcadrial.zengame.ZenClass;
+import com.alcadrial.zengame.script.graphics.ZenImage;
 
 @ZenClass
 @Name(IoPackage.PACKAGE + "ImageLoader")
@@ -37,9 +38,14 @@ public class ImageLoader {
 	}
 	
 	@Method
-	public static Image getImage(ZenFile file)
+	public static ZenImage getImage(ZenFile file)
 	{
-		return LOADED_IMAGES.computeIfAbsent(new File(Properties.ASSETS_PATH.getValue(), file.getFile().getPath()), file0 -> {
+		return new ZenImage(file);
+	}
+	
+	public static Image getImage(File file)
+	{
+		return LOADED_IMAGES.computeIfAbsent(new File(Properties.ASSETS_PATH.getValue(), file.getPath()), file0 -> {
 			try
 			{
 				return ImageIO.read(file0);

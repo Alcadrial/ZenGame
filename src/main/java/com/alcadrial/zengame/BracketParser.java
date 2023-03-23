@@ -10,5 +10,8 @@ import java.lang.annotation.Target;
 @Target(METHOD)
 public @interface BracketParser {
 	
-	String value();
+	String name();
+	
+	@Format("<§BracketParserName§:§ValidParserValue§>")
+	String format();
 }

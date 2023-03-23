@@ -71,7 +71,7 @@ public class ZenGame {
 						Class<?>[] parameters = method.getParameterTypes();
 						if (parameters.length == 2 && parameters[0].isAssignableFrom(CodePosition.class) && parameters[1].isAssignableFrom(ZSTokenParser.class))
 						{
-							bracketParser.register(method.getAnnotation(BracketParser.class).value(), (position, parser) -> {
+							bracketParser.register(method.getAnnotation(BracketParser.class).name(), (position, parser) -> {
 								try
 								{
 									return (ParsedExpression) method.invoke(null, position, parser);

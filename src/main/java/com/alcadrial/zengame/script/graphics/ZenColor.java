@@ -28,7 +28,7 @@ import com.alcadrial.zengame.ZenClass;
 @Name(GraphicsPackage.PACKAGE + "Color")
 public class ZenColor {
 	
-	@BracketParser("color")
+	@BracketParser(name = "color", format = "")
 	public static ParsedNewExpression parse(CodePosition position, ZSTokenParser tokens) throws ParseException
 	{
 		return new ParsedNewExpression(position, new ParsedNamedType(position, List.of(ZenColor.class.getAnnotation(Name.class).value().split("\\.")).stream().map(s -> new ParsedNamePart(s, null)).toList()), new ParsedCallArguments(null, parseParameters(position, tokens)));
