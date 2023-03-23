@@ -9,23 +9,30 @@ println("--------------------------------");
 println("              ZEN               ");
 println("--------------------------------");
 
-public class IntegerPointer {
-	
-	private var i as int;
-	
-	public this(i as int)
-	{
-		this.i = i;
-	}
-	
-	public next() as int
-	{
-		i += 1;
-		return i;
-	}
+public class Vars {
+	public static final var screen = [
+			"/-----------------------------------\\",
+			"|                                   |",
+			"|                                   |",
+			"|                                   |",
+			"|                                   |",
+			"|                                   |",
+			"|                                   |",
+			"|                                   |",
+			"|                                   |",
+			"|                                   |",
+			"\\-----------------------------------/"
+	    ] as char[][];
+	public static final var minX = 0 as uint;
+	public static final var maxX = 34 as uint;
+	public static final var minY = 0 as uint;
+	public static final var maxY = 8 as uint;
+	public static var lastX = 0 as usize;
+	public static var lastY = 0 as usize;
+	public static var x = 17 as usize;
+	public static var y = 3 as usize;
+	public static var moved = true;
 }
-
-var i = new IntegerPointer(0);
 
 var game = GameRegistry.registerCommandLineGame("zen");
 
@@ -34,10 +41,84 @@ println(game);
 game.onStart = () => {
 	game.addKeyListener(context => {
 		if (context.virtualKeyCode == KeyContext.KEY_ESCAPE) game.terminate();
+		if (context.pressed)
+		{
+			/*
+			switch(context.virtualKeyCode)
+			{
+				case KeyContext.KEY_UP:
+					if (Vars.y < 10) Vars.y++;
+					break;
+				case KeyContext.KEY_LEFT:
+					if (Vars.x > 0) Vars.x--;
+					break;
+				case KeyContext.KEY_RIGHT:
+					if (Vars.x < 10) Vars.x++;
+					break;
+				case KeyContext.KEY_DOWN:
+					if (Vars.y > 3) Vars.y--;
+					break;
+			}
+			*/
+			
+			if (context.virtualKeyCode == KeyContext.KEY_UP)
+			{
+				if (Vars.y < Vars.maxY) 
+				{
+					Vars.y++;
+					Vars.moved = true;
+				}
+			}
+			else if (context.virtualKeyCode == KeyContext.KEY_LEFT)
+			{
+				if (Vars.x > Vars.minX)
+				{
+					Vars.x--;
+					Vars.moved = true;
+				}
+			}
+			else if (context.virtualKeyCode == KeyContext.KEY_RIGHT) 
+			{
+				if (Vars.x < Vars.maxX)
+				{
+					Vars.x++;
+					Vars.moved = true;
+				}
+			}
+			else if (context.virtualKeyCode == KeyContext.KEY_DOWN)
+			{
+				if (Vars.y > Vars.minY)
+				{
+					Vars.y--;
+					Vars.moved = true;
+				}
+			}
+		}
 	});
 	game.println("Press 'ESC' to exit in any moment");
 };
 game.onLoop = partial => {
+	
+	if (Vars.moved)
+	{
+		game.clear();
+		game.println("{" + Vars.x + ";" + Vars.y + "}");
+		Vars.screen[11 - Vars.lastY - 2][Vars.lastX + 1] = ' ';
+		Vars.screen[11 - Vars.y - 2][Vars.x + 1] = '*';
+		Vars.lastX = Vars.x;
+		Vars.lastY = Vars.y;
+		
+		for row in Vars.screen
+		{
+			for i in 0 .. row.length
+			{
+				game.print(row[i]);
+			}
+			game.println();
+		}
+		
+		Vars.moved = false;
+	}
 	
 };
 game.onTerminate = () => {
@@ -45,53 +126,6 @@ game.onTerminate = () => {
 	game.println("GAME OVER");
 	game.println();
 };
-println(game.isRunning());
-
-
-public class C {
-	public static var i = 0;
-	
-	public static getInt() as int
-	{
-		i++;
-		return i;
-	}
-	
-	private var j as int;
-	
-	public this(k as int)
-	{
-		j = k;
-	}
-	
-	public next() as int
-	{
-		j += 1;
-		return j;
-	}
-}
-println(C.getInt());
-println(C.getInt());
-println(C.getInt());
-println(C.getInt());
-
-var v0 = 3;
-<action:moving>;
-println(<action:sleeping>);
-println(Action.WORKING);
-var c = new C(3);
-println(c.next());
-println(c.next());
-
-var arr = ["A", "B", "C"] as string[];
-println(arr[0]);
-
-var a = "alfa" as string;
-
-println(a);
-
-var aa = <action:working>;
-println(aa);
 
 println("--------------------------------");
 println("              END               ");
